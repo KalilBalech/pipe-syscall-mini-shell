@@ -20,7 +20,7 @@ void defineStandardInput(char string[]){
     int fd2 = dup2(fdin,0);
 }
 
-void processComand(char input[]){
+void processComand(char input[], int pipeCount){
     int i, isOutputFile = 0, isInputFile = 0;
 
     char words[MAX_NUMBER_OF_WORDS][MAX_WORD_LENGTH]; // auxiliary array of strings that pre-process each word
@@ -73,8 +73,19 @@ void processComand(char input[]){
                 token = strtok(NULL, " \n"); // lê a próxima palavra
             }
         }
-        
-        execve(args[0], args, NULL); // call the execve syscall based on what is on args
+        if(pipeCount==0){
+            execve(args[0], args, NULL); // call the execve syscall based on what is on args
+        }
+        else if(pipeCount==1){
+            char aux[MAX_WORD_LENGTH];
+            strcpy(aux, "/usr/bin/");
+            strcat(aux, args[0]);
+            printf("aux = %s\n", aux);
+            for(int i=0; i<2; i++){
+                printf("args[%d] = %s\n", i, args[i]);
+            }
+            execl(aux, args[0], args[1], NULL);
+        }
         printf("Erro na execucao do comando. Por favor, estude mais. Voce esta precisando!\n");
     }
     else{ // parent syscall proeess that waits for its child
@@ -83,33 +94,33 @@ void processComand(char input[]){
 }
 
 void onePipeCall(char command1[], char command2[]) {
+    printf("Entrou no onePipeCall\n");
     int pipefd[2];
     pipe(pipefd);
 
     if (!fork()) {
+        printf("Entrou no primeiro fork\n");
         close(pipefd[0]);
 
         dup2(pipefd[1], 1);
 
-        execl("usr/bin/ls", "ls", "-l", NULL);
-        // processComand(command1);
+        // execl("/usr/bin/ls", "ls", "-l", NULL);
+        processComand(command1, 1);
     }
 
     if (!fork()) {
+        printf("Entrou no segundo fork\n");
+
         close(pipefd[1]);
 
         dup2(pipefd[0], 0);
 
-        execl("/usr/bin/rev", "rev", NULL);
-        // processComand(command2);
+        // execl("/usr/bin/rev", "rev", NULL);
+        processComand(command2, 1);
     }
-
     close(pipefd[0]);
     close(pipefd[1]);        
-
     wait(NULL);
-
-    // printf("This line should execute!\n");
 }
 
 void twoPipeCalls(int argc, char *argv[]) {
@@ -183,7 +194,7 @@ int main(){
         // if there are 1 pipe calls
         if(pipeCount == 0){
             printf("pipeCount == 0\n");
-            processComand(input);
+            processComand(input, pipeCount);
         }
         else if(pipeCount == 1){
             printf("pipeCount == 1\n");
@@ -193,7 +204,7 @@ int main(){
             if(command1[strlen(command1) - 1] == ' '){ // transform the last "input variable" element into \0, that is the standard end of string
                 command1[strlen(command1) - 1] = '\0';
             }
-            // printf("command1: %s - %ld\n", command1, strlen(command1));
+            printf("command1: %s - %ld\n", command1, strlen(command1));
             token = strtok(NULL, "|"); // reads next command
             strcpy(command2, token);
             if(command2[0] == ' '){ // transform the last "input variable" element into \0, that is the standard end of string
@@ -202,7 +213,7 @@ int main(){
                 }
                 command2[i] = '\0';
             }
-            // printf("command2: %s - %ld\n", command2, strlen(command2));
+            printf("command2: %s - %ld\n", command2, strlen(command2));
             onePipeCall(command1, command2);
         }
         // else if(pipeCount == 2) twoPipeCalls();
