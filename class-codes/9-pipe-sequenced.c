@@ -24,12 +24,12 @@ int main(int argc, char *argv[]) {
         execl("/usr/bin/wc", "wc", "-l", NULL);
     }
 
-    close(pipefd[0]);
-    close(pipefd[1]);        
+    // close(pipefd[0]);
+    // close(pipefd[1]);        
 
-    wait(NULL);
+    // wait(NULL);
 
-    printf("This line should execute!\n");
+    // printf("This line should execute!\n");
 
     return 0;
 }
