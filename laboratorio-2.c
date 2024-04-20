@@ -80,30 +80,18 @@ void processComand(char input[], int pipeCount){
             char aux[MAX_WORD_LENGTH];
             strcpy(aux, "/usr/bin/");
             strcat(aux, args[0]);
-            // printf("aux = %s\n", aux);
-            // for(int i=0; i<3; i++){
-            //     printf("args[%d] = %s\n", i, args[i]);
-            // }
             execl(aux, args[0], NULL);
         }
         else if(numberOfWordsRead==2){
             char aux[MAX_WORD_LENGTH];
             strcpy(aux, "/usr/bin/");
             strcat(aux, args[0]);
-            // printf("aux = %s\n", aux);
-            // for(int i=0; i<3; i++){
-            //     printf("args[%d] = %s\n", i, args[i]);
-            // }
             execl(aux, args[0], args[1], NULL);
         }
         else if(numberOfWordsRead==3){
             char aux[MAX_WORD_LENGTH];
             strcpy(aux, "/usr/bin/");
             strcat(aux, args[0]);
-            // printf("aux = %s\n", aux);
-            // for(int i=0; i<3; i++){
-            //     printf("args[%d] = %s\n", i, args[i]);
-            // }
             execl(aux, args[0], args[1], args[2], NULL);
         }
         printf("Erro na execucao do comando. Por favor, estude mais. Voce esta precisando!\n");
@@ -186,7 +174,6 @@ int main(){
         if(input[strlen(input) - 1] == '\n'){ // transform the last "input variable" element into \0, that is the standard end of string
             input[strlen(input) - 1] = '\0';
         }
-        // printf("Input lido: %s\n", input);
 
         // check how many pipe calls
         for(i=0; i<strlen(input); i++){
@@ -195,17 +182,14 @@ int main(){
 
         // if there are 1 pipe calls
         if(pipeCount == 0){
-            // printf("pipeCount == 0\n");
             processComand(input, pipeCount);
         }
         else if(pipeCount == 1){
-            // printf("pipeCount == 1\n");
             char *token = strtok(input, "|");
             strcpy(command1, token);
             if(command1[strlen(command1) - 1] == ' '){ // transform the last "input variable" element into \0, that is the standard end of string
                 command1[strlen(command1) - 1] = '\0';
             }
-            // printf("command1: %s - %ld\n", command1, strlen(command1));
             token = strtok(NULL, "|"); // reads next command
             strcpy(command2, token);
             if(command2[0] == ' '){ // transform the last "input variable" element into \0, that is the standard end of string
@@ -214,17 +198,14 @@ int main(){
                 }
                 command2[i] = '\0';
             }
-            // printf("command2: %s - %ld\n", command2, strlen(command2));
             onePipeCall(command1, command2);
         }
         else if(pipeCount == 2){
-            // printf("pipeCount == 2\n");
             char *token = strtok(input, "|");
             strcpy(command1, token);
             if(command1[strlen(command1) - 1] == ' '){ // transform the last "input variable" element into \0, that is the standard end of string
                 command1[strlen(command1) - 1] = '\0';
             }
-            // printf("command1: %s - %ld\n", command1, strlen(command1));
             token = strtok(NULL, "|"); // reads next command
             strcpy(command2, token);
             if(command2[0] == ' '){ // transform the last "input variable" element into \0, that is the standard end of string
@@ -236,7 +217,6 @@ int main(){
             if(command2[strlen(command2) - 1] == ' '){ // transform the last "input variable" element into \0, that is the standard end of string
                 command2[strlen(command2) - 1] = '\0';
             }
-            // printf("command2: %s - %ld\n", command2, strlen(command2));
             token = strtok(NULL, "|"); // reads next command
             strcpy(command3, token);
             if(command3[0] == ' '){ // transform the last "input variable" element into \0, that is the standard end of string
@@ -245,7 +225,6 @@ int main(){
                 }
                 command3[i] = '\0';
             }
-            // printf("command3: %s - %ld\n", command3, strlen(command3));
             twoPipeCalls(command1, command2, command3);
         }
 
